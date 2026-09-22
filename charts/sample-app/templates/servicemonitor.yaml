@@ -1,0 +1,20 @@
+{{- if .Values.serviceMonitor.enabled }}
+# Tells the kube-prometheus-stack Prometheus to scrape /metrics on this app.
+# The `release: kube-prometheus-stack` label is what that chart's Prometheus
+# selects on by default.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "sample-app.fullname" . }}
+  labels:
+    {{- include "sample-app.labels" . | nindent 4 }}
+    release: {{ .Values.serviceMonitor.releaseLabel }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "sample-app.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: {{ .Values.serviceMonitor.interval }}
+{{- end }}

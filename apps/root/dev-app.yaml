@@ -1,0 +1,58 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sample-app-dev
+  namespace: argocd
+  annotations:
+    # --- Argo Image Updater configuration --------------------------------
+    # This block exists on the dev Application ONLY. It is what makes dev
+    # continuously deployed and staging/prod promotion-gated: Image Updater
+    # simply has no instructions for the other two environments.
+
+    # Watch the ECR repo. Replace <ACCOUNT_ID>/region with your own.
+    argocd-image-updater.argoproj.io/image-list: >-
+      app=<ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/sample-app
+
+    # CI tags with a git SHA, which has no ordering — so sort by image push
+    # time rather than trying to parse the tag as a version.
+    argocd-image-updater.argoproj.io/app.update-strategy: newest-build
+
+    # Write the new tag back to git rather than patching the live Deployment.
+    # This is the difference between real GitOps and a mutation ArgoCD would
+    # immediately flag as drift: git stays the source of truth.
+    argocd-image-updater.argoproj.io/write-back-method: git
+    argocd-image-updater.argoproj.io/write-back-target: helmvalues:/charts/sample-app/values-dev.yaml
+    argocd-image-updater.argoproj.io/app.helm.image-tag: image.tag
+
+    # Credentials for ECR come from the IRSA role on the image-updater
+    # ServiceAccount, refreshed by the ecr-login helper.
+    argocd-image-updater.argoproj.io/app.force-update: "true"
+spec:
+  project: default
+
+  source:
+    # Replace with your own GitOps repo URL.
+    repoURL: https://github.com/<GITHUB_USER>/pipeline-gitops.git
+    targetRevision: main
+    path: charts/sample-app
+    helm:
+      valueFiles:
+        - values.yaml
+        - values-dev.yaml
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: sample-app-dev
+
+  syncPolicy:
+    automated:
+      prune: true    # deleting a manifest in git deletes it in the cluster
+      selfHeal: true # manual kubectl changes get reverted — git wins
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 2m

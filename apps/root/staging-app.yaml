@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sample-app-staging
+  namespace: argocd
+  # Deliberately NO argocd-image-updater annotations. Automation cannot move
+  # staging forward; only a merged PR that edits values-staging.yaml can.
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/<GITHUB_USER>/pipeline-gitops.git
+    targetRevision: main
+    path: charts/sample-app
+    helm:
+      valueFiles:
+        - values.yaml
+        - values-staging.yaml
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: sample-app-staging
+
+  syncPolicy:
+    # Auto-sync is still on: once a human has approved the promotion PR, the
+    # merge should take effect without a second manual step. The gate is code
+    # review, not the sync button.
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 2m

@@ -1,0 +1,17 @@
+# prod — promoted by a human PR, then released by an explicit manual sync.
+#
+# Two gates stand between a build and production: someone must merge the tag
+# change, and someone must then run `argocd app sync sample-app-prod`. Merging
+# alone deploys nothing.
+
+environment: prod
+
+# One more replica than the lower environments, purely to make the difference
+# between the tiers visible in the ArgoCD UI during the demo.
+replicaCount: 3
+
+image:
+  tag: "REPLACE_ME"
+
+externalSecret:
+  remoteKey: pipeline-app/prod

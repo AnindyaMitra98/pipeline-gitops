@@ -1,0 +1,47 @@
+# Shared defaults for every environment.
+# Per-environment overrides live in values-dev.yaml / values-staging.yaml /
+# values-prod.yaml — those are the files that actually differ, and the image
+# tag in each is the promotion unit.
+
+# Replace <ACCOUNT_ID> and the region with your own, or take the value from
+#   terraform -chdir=infra/envs/cluster output -raw ecr_repository_url
+image:
+  repository: <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/sample-app
+  tag: "REPLACE_ME"
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+environment: unknown
+
+service:
+  type: LoadBalancer
+  port: 80
+  annotations:
+    # Network Load Balancer is cheaper and faster to provision than the classic
+    # ELB default, and tears down more predictably.
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    # No CPU limit on purpose — CPU throttling on a bursty Node process causes
+    # more grief than it prevents. Memory is capped to keep a leak contained.
+    memory: 192Mi
+
+externalSecret:
+  enabled: true
+  storeName: aws-secrets-manager
+  # Overridden per environment to pipeline-app/<env>.
+  remoteKey: pipeline-app/dev
+  targetName: sample-app-config
+  refreshInterval: 1h
+
+serviceMonitor:
+  enabled: true
+  releaseLabel: kube-prometheus-stack
+  interval: 30s
+
+nameOverride: ""
+fullnameOverride: ""

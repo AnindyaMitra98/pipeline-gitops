@@ -1,0 +1,15 @@
+# staging — promoted into by a human, never by automation.
+#
+# Argo Image Updater has no annotations pointing at this environment, so the
+# only way `image.tag` changes is a reviewed PR copying a known-good tag out of
+# values-dev.yaml. ArgoCD then auto-syncs the merge.
+
+environment: staging
+
+replicaCount: 2
+
+image:
+  tag: "REPLACE_ME"
+
+externalSecret:
+  remoteKey: pipeline-app/staging

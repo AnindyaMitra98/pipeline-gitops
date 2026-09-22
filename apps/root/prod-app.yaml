@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sample-app-prod
+  namespace: argocd
+  # No image-updater annotations here either.
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/<GITHUB_USER>/pipeline-gitops.git
+    targetRevision: main
+    path: charts/sample-app
+    helm:
+      valueFiles:
+        - values.yaml
+        - values-prod.yaml
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: sample-app-prod
+
+  syncPolicy:
+    # No `automated` block at all — this is the production gate. A merged PR
+    # makes the Application show OutOfSync; releasing it takes a deliberate
+    #   argocd app sync sample-app-prod
+    # or a click in the UI.
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 2m

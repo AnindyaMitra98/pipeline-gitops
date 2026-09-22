@@ -1,0 +1,11 @@
+apiVersion: v2
+name: sample-app
+description: The demo web app deployed by ArgoCD across dev, staging and prod.
+type: application
+
+# Chart version tracks changes to the templates in this repo.
+version: 1.0.0
+
+# appVersion is intentionally a placeholder. The real running version is the
+# image tag in values-<env>.yaml, which Argo Image Updater rewrites for dev.
+appVersion: "1.0.0"

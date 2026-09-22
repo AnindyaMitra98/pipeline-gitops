@@ -1,0 +1,16 @@
+# dev — the only environment Argo Image Updater writes to.
+#
+# The `image.tag` line below is rewritten automatically by Argo Image Updater
+# whenever a new SHA-tagged image lands in ECR, and committed straight back to
+# this repo. Do not hand-edit it; your change will be overwritten on the next
+# build. Promotion to staging is a human PR that copies this value across.
+
+environment: dev
+
+replicaCount: 2
+
+image:
+  tag: "REPLACE_ME"
+
+externalSecret:
+  remoteKey: pipeline-app/dev

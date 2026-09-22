@@ -1,0 +1,5 @@
+# Rendered output and chart dependencies — the source templates are what matter.
+charts/**/charts/
+*.tgz
+
+.DS_Store
