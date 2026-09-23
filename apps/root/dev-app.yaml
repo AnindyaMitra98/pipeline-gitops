@@ -27,6 +27,9 @@ metadata:
     argocd-image-updater.argoproj.io/write-back-method: git
     argocd-image-updater.argoproj.io/write-back-target: helmvalues:/charts/sample-app/values-dev.yaml
     argocd-image-updater.argoproj.io/app.helm.image-tag: image.tag
+    # Name the key the chart actually reads. Left unset, Image Updater invents
+    # an `image.name` key the chart ignores, adding noise to every deploy commit.
+    argocd-image-updater.argoproj.io/app.helm.image-name: image.repository
 
     # Credentials for ECR come from the IRSA role on the image-updater
     # ServiceAccount, refreshed by the ecr-login helper.

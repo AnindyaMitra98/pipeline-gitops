@@ -9,6 +9,6 @@ environment: dev
 replicaCount: 2
 image:
   tag: "7bba6991"
-  name: 180285183661.dkr.ecr.us-east-1.amazonaws.com/sample-app
+  repository: 180285183661.dkr.ecr.us-east-1.amazonaws.com/sample-app
 externalSecret:
   remoteKey: pipeline-app/dev
