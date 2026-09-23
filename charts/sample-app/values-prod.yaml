@@ -11,7 +11,7 @@ environment: prod
 replicaCount: 3
 
 image:
-  tag: "REPLACE_ME"
+  tag: "7bba6991"
 
 externalSecret:
   remoteKey: pipeline-app/prod
