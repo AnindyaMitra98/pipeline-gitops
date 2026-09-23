@@ -6,11 +6,9 @@
 # build. Promotion to staging is a human PR that copies this value across.
 
 environment: dev
-
 replicaCount: 2
-
 image:
-  tag: "REPLACE_ME"
-
+  tag: "7bba6991"
+  name: 180285183661.dkr.ecr.us-east-1.amazonaws.com/sample-app
 externalSecret:
   remoteKey: pipeline-app/dev
