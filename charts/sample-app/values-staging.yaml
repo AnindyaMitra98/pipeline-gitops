@@ -9,7 +9,7 @@ environment: staging
 replicaCount: 2
 
 image:
-  tag: "REPLACE_ME"
+  tag: "7bba6991"
 
 externalSecret:
   remoteKey: pipeline-app/staging
