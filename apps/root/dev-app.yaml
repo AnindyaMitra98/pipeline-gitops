@@ -15,7 +15,7 @@ metadata:
 
     # Watch the ECR repo. Replace <ACCOUNT_ID>/region with your own.
     argocd-image-updater.argoproj.io/image-list: >-
-      app=<ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/sample-app
+      app=180285183661.dkr.ecr.us-east-1.amazonaws.com/sample-app
 
     # CI tags with a git SHA, which has no ordering — so sort by image push
     # time rather than trying to parse the tag as a version.
@@ -36,7 +36,7 @@ spec:
 
   source:
     # Replace with your own GitOps repo URL.
-    repoURL: https://github.com/<GITHUB_USER>/pipeline-gitops.git
+    repoURL: https://github.com/AnindyaMitra98/pipeline-gitops.git
     targetRevision: main
     path: charts/sample-app
     helm:

@@ -6,7 +6,7 @@
 # Replace <ACCOUNT_ID> and the region with your own, or take the value from
 #   terraform -chdir=infra/envs/cluster output -raw ecr_repository_url
 image:
-  repository: <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/sample-app
+  repository: 180285183661.dkr.ecr.us-east-1.amazonaws.com/sample-app
   tag: "REPLACE_ME"
   pullPolicy: IfNotPresent
 

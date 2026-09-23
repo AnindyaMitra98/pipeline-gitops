@@ -9,7 +9,7 @@ spec:
   project: default
 
   source:
-    repoURL: https://github.com/<GITHUB_USER>/pipeline-gitops.git
+    repoURL: https://github.com/AnindyaMitra98/pipeline-gitops.git
     targetRevision: main
     path: charts/sample-app
     helm:
