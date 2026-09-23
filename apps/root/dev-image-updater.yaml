@@ -1,0 +1,17 @@
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: sample-app-dev
+  namespace: argocd
+spec:
+  # Argo Image Updater v1.x is a controller: it acts only on Applications that
+  # an ImageUpdater resource selects. This one selects dev, and nothing else.
+  #
+  # The name is exact, not a glob like `sample-app-*`. A wildcard here would
+  # quietly put staging and prod under automation and erase the promotion gate.
+  applicationRefs:
+    - namePattern: sample-app-dev
+      # Read the image list, update strategy and git write-back settings from
+      # the argocd-image-updater.argoproj.io/* annotations on dev-app.yaml, so
+      # the configuration stays next to the Application it drives.
+      useAnnotations: true

@@ -8,6 +8,10 @@ metadata:
     # This block exists on the dev Application ONLY. It is what makes dev
     # continuously deployed and staging/prod promotion-gated: Image Updater
     # simply has no instructions for the other two environments.
+    #
+    # Image Updater v1.x reads these only because dev-image-updater.yaml
+    # selects this Application with `useAnnotations: true`. Both halves are
+    # needed; either one alone deploys nothing.
 
     # Watch the ECR repo. Replace <ACCOUNT_ID>/region with your own.
     argocd-image-updater.argoproj.io/image-list: >-

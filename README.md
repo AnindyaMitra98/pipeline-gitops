@@ -13,7 +13,8 @@ charts/sample-app/      one Helm chart, three values files
   values-dev.yaml       written by Argo Image Updater
   values-staging.yaml   written by humans
   values-prod.yaml      written by humans
-apps/root/              the three ArgoCD Applications
+apps/root/              the three ArgoCD Applications, plus the
+                        ImageUpdater resource that selects dev
 ```
 
 ## How a change reaches production
@@ -35,6 +36,13 @@ ECR push  ->  values-dev.yaml     (Image Updater commits)    -> dev auto-syncs
 Only `apps/root/dev-app.yaml` carries `argocd-image-updater.argoproj.io/*`
 annotations. Staging and prod have none, so no automation can move them —
 their tags change only through a reviewed pull request.
+
+Since v1.0, Image Updater is a controller that acts only on Applications an
+`ImageUpdater` resource selects. `apps/root/dev-image-updater.yaml` selects
+`sample-app-dev` by exact name, with `useAnnotations: true` so the annotations
+above remain the configuration. That makes two locks on the same door:
+staging and prod are neither selected nor annotated. Widening `namePattern` to
+a glob like `sample-app-*` would be the quiet way to break the promotion model.
 
 Image Updater is configured with `write-back-method: git`, so it commits the
 new tag to `values-dev.yaml` rather than patching the live Deployment. Patching
@@ -91,10 +99,13 @@ Replace the placeholders before the first sync:
 | Placeholder | Where | Value |
 |-------------|-------|-------|
 | `<ACCOUNT_ID>` | `values.yaml`, `apps/root/dev-app.yaml` | your AWS account's ECR registry host |
-| `<GITHUB_USER>` | `apps/root/*.yaml` | the account owning this repo |
+| `<GITHUB_USER>` | the three `apps/root/*-app.yaml` | the account owning this repo |
 | `REPLACE_ME` | each `values-*.yaml` | any tag already in ECR; dev self-corrects |
 
 ```bash
 terraform -chdir=../infra/envs/cluster output -raw ecr_repository_url
 kubectl apply -f apps/root/
 ```
+
+`kubectl apply -f apps/root/` needs Argo Image Updater installed first — it
+provides the `ImageUpdater` CRD that `dev-image-updater.yaml` uses.
